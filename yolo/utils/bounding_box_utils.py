@@ -348,7 +348,7 @@ class Vec2Box:
 
         anchor_grid, scaler = generate_anchors(image_size, self.strides)
         self.image_size = image_size
-        self.anchor_grid, self.scaler = anchor_grid.to(device), scaler.to(device)
+        self.anchor_grid, self.scaler = anchor_grid.to(device).to(torch.float32), scaler.to(device).to(torch.float32)
 
     def create_auto_anchor(self, model: YOLO, image_size):
         W, H = image_size
