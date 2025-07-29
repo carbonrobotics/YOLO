@@ -369,7 +369,7 @@ class Vec2Box:
             return
         anchor_grid, scaler = generate_anchors(image_size, self.strides)
         self.image_size = image_size
-        self.anchor_grid, self.scaler = anchor_grid.to(self.device), scaler.to(self.device)
+        self.anchor_grid, self.scaler = anchor_grid.to(self.device).to(torch.float32), scaler.to(self.device).to(torch.float32)
 
     def __call__(self, predicts):
         preds_cls, preds_anc, preds_box = [], [], []
