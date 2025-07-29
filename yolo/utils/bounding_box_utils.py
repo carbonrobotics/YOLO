@@ -378,9 +378,9 @@ class Vec2Box:
             preds_cls.append(rearrange(pred_cls, "B C h w -> B (h w) C"))
             preds_anc.append(rearrange(pred_anc, "B A R h w -> B (h w) R A"))
             preds_box.append(rearrange(pred_box, "B X h w -> B (h w) X"))
-        preds_cls = torch.concat(preds_cls, dim=1)
-        preds_anc = torch.concat(preds_anc, dim=1)
-        preds_box = torch.concat(preds_box, dim=1)
+        preds_cls = torch.cat(preds_cls, dim=1)
+        preds_anc = torch.cat(preds_anc, dim=1)
+        preds_box = torch.cat(preds_box, dim=1)
 
         pred_LTRB = preds_box * self.scaler.view(1, -1, 1)
         lt, rb = pred_LTRB.chunk(2, dim=-1)
