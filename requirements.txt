@@ -1,10 +1,10 @@
 einops
-faster-coco-eval
+# faster-coco-eval
 graphviz
 hydra-core
 lightning
 loguru
-opencv-python
+# opencv-python
 Pillow
 pycocotools
 requests
