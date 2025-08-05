@@ -154,8 +154,10 @@ class YOLO(nn.Module):
                 continue
             if model_weight.shape != weights[weights_key].shape:
                 error_dict["Mismatch"].add(tuple(model_key.split(".")[:-2]))
+                print(f"Mismatch: {model_key} {model_weight.shape} != {weights[weights_key].shape}")
                 continue
             model_state_dict[model_key] = weights[weights_key]
+        print(f"Loaded {len(model_state_dict)} weights from {weights}")
 
         for error_name, error_set in error_dict.items():
             for weight_name in error_set:
