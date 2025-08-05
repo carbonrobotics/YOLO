@@ -160,6 +160,9 @@ class YOLO(nn.Module):
         for error_name, error_set in error_dict.items():
             for weight_name in error_set:
                 logger.warning(f":warning: Weight {error_name} for key: {'.'.join(weight_name)}")
+                if error_name == "Mismatch":
+                    logger.warning(f"  Expected shape: {model_state_dict[weight_name].shape}, "
+                                   f"but got: {weights[weight_name].shape}")
 
         self.load_state_dict(model_state_dict)
 
