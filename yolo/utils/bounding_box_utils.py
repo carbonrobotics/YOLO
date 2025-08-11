@@ -1,5 +1,5 @@
 import math
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 import torch
 from einops import rearrange
@@ -8,8 +8,10 @@ from torchmetrics.detection import MeanAveragePrecision
 from torchvision.ops import batched_nms
 
 from yolo.config.config import AnchorConfig, MatcherConfig, NMSConfig
-from yolo.model.yolo import YOLO
+from yolo.model.module import Anchor2Vec
+from yolo.model.yolo import YOLO, create_model
 from yolo.utils.logger import logger
+from hydra import compose, initialize
 
 
 def calculate_iou(bbox1, bbox2, metrics="iou") -> Tensor:
@@ -489,3 +491,10 @@ def to_metrics_format(prediction: Tensor) -> Dict[str, Union[float, Tensor]]:
     if prediction.size(1) == 6:
         bbox["scores"] = prediction[:, 5]
     return bbox
+
+def get_model_and_converter(model: str = "v9-s", model_path: Optional[str] = None, image_size: Iterable[int] = (1440, 928)) -> Tuple[YOLO, Union[Anchor2Vec, Vec2Box]]:
+    with initialize(version_base=None, config_path="../config"):
+        cfg = compose(config_name="config.yaml", overrides=[f"model={model}",])  # Use the specified model
+    model = create_model(cfg.model, weight_path=model_path if model_path else True, class_num=80)
+    converter = create_converter(cfg.model.name, model, cfg.model.anchor, image_size, "cuda")
+    return model, converter
