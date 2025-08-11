@@ -1,15 +1,18 @@
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 import torch
 from omegaconf import ListConfig, OmegaConf
 from torch import nn
 
 from yolo.config.config import ModelConfig, YOLOLayer
+from yolo.model.module import Anchor2Vec
 from yolo.tools.dataset_preparation import prepare_weight
+from yolo.utils.bounding_box_utils import Vec2Box, create_converter
 from yolo.utils.logger import logger
 from yolo.utils.module_utils import get_layer_map
+from hydra import compose, initialize
 
 
 class YOLO(nn.Module):
@@ -154,7 +157,6 @@ class YOLO(nn.Module):
                 continue
             if model_weight.shape != weights[weights_key].shape:
                 error_dict["Mismatch"].add(tuple(model_key.split(".")[:-2]))
-                print(f"Mismatch: {model_key} {model_weight.shape} != {weights[weights_key].shape}")
                 continue
             model_state_dict[model_key] = weights[weights_key]
 
@@ -230,3 +232,10 @@ def create_model(model_cfg: ModelConfig, weight_path: Union[bool, Path] = True, 
     else:
         logger.info(":white_check_mark: Success load model")
     return model
+
+def get_model_and_converter(model: str = "v9-s", model_path: Optional[str] = None, image_size: Iterable[int] = (1440, 928)) -> Tuple[YOLO, Union[Anchor2Vec, Vec2Box]]:
+    with initialize(version_base=None, config_path="../config"):
+        cfg = compose(config_name="config.yaml", overrides=[f"model={model}",])  # Use the specified model
+    model = create_model(cfg.model, weight_path=model_path if model_path else True, class_num=80)
+    converter = create_converter(cfg.model.name, model, cfg.model.anchor, image_size, "cuda")
+    return model, converter

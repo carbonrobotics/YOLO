@@ -1,5 +1,5 @@
 from yolo.config.config import Config, NMSConfig
-from yolo.model.yolo import create_model
+from yolo.model.yolo import create_model, get_model_and_converter
 from yolo.tools.data_loader import AugmentationComposer, create_dataloader
 from yolo.tools.drawer import draw_bboxes
 from yolo.tools.solver import TrainModel

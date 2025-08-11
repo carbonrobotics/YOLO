@@ -382,7 +382,6 @@ class Vec2Box:
         preds_anc = torch.cat(preds_anc, dim=1)
         preds_box = torch.cat(preds_box, dim=1)
 
-        print(preds_box.dtype, self.scaler.dtype)
         pred_LTRB = preds_box * self.scaler.view(1, -1, 1)
         lt, rb = pred_LTRB.chunk(2, dim=-1)
         preds_box = torch.cat([self.anchor_grid - lt, self.anchor_grid + rb], dim=-1)
